@@ -81,7 +81,7 @@
       return;
     }
 
-    // Construct and render user message
+    
     console.log("bot button clicked");
     const message = botinput.value;
     console.log("message: " + message);
@@ -103,12 +103,12 @@
     botMessages.scrollTo(0, botMessages.scrollHeight);
     botinput.value = "";
 
-    // Disable send button and input field
+    
     botbutton.disabled = true;
     botinput.disabled = true;
     console.log("bot is typing");
 
-    // Construct and render placeholder bot message
+    
     const botMessage = document.createElement("p");
     botMessage.classList.add("bot-message-loading");
     const botMessageSpan = document.createElement("span");
@@ -119,7 +119,7 @@
     botMessages.appendChild(botMessage);
     botMessages.scrollTo(0, botMessages.scrollHeight);
 
-    // Request a response from the Shopping Assistant
+    
     const response = await fetch("{{ $.baseUrl }}/bot", {
       method: "POST",
       headers: {
@@ -133,24 +133,25 @@
     const responseJson = await response.json();
     console.log(responseJson);
 
-    // Fetch the product IDs from the response
+    
     const extractedIds = extractIdsFromString(responseJson.message);
     console.log(extractedIds);
 
-    // Replace the placeholder bot message text with the real response
-    // Making sure to remove any lists or product IDs from that message
+    
     botMessageSpan.innerText = responseJson.message.replace(/\n+[-*\d][\S\s]*/g, "");
     botMessage.classList.remove("bot-message-loading");
 
-    // If there are any product IDs...
+    
     if (extractedIds.length > 0) {
-      // Construct root products div
+     
+      
       const botProductsDiv = document.createElement("div");
       botProductsDiv.classList.add("bot-products");
 
-      // For each product...
+      // para cada producto
       for (const id of extractedIds) {
-        // Retrieve product metadata from the Product Catalog
+       
+        
         const productResponse = await fetch("{{ $.baseUrl }}/product-meta/" + id, {
           method: "GET",
           headers: {
@@ -159,38 +160,41 @@
         });
         const product = await productResponse.json();
 
-        // Construct main product div
+        
         const botProductDiv = document.createElement("a");
         botProductDiv.classList.add("bot-product");
         botProductDiv.href = "{{ $.baseUrl }}/product/" + id;
 
-        // Construct product image
+        //imagen producto
         const botProductImg = document.createElement("img");
         botProductImg.src = product["picture"];
         botProductImg.classList.add("bot-product-img");
         botProductImg.onerror = function() { this.style.display = 'none'; };
         botProductDiv.appendChild(botProductImg);
 
-        // Construct product description div
+       
+        // descripcion producto
         const botProductDescription = document.createElement("div");
         botProductDescription.classList.add("bot-product-description");
         let productDescription = product["description"];
-        if (productDescription.length > 350) { // Shorten descriptions that are too long
+        if (productDescription.length > 350) { // acorta las descripciones que son muy largas
           productDescription = productDescription.substring(0, 330) + '...';
         }
         botProductDescription.innerHTML = "<b>" + product["name"] + "</b><br>" + productDescription;
         botProductDiv.appendChild(botProductDescription);
 
-        // Append main product div into the root products div
+       
+        
         botProductsDiv.appendChild(botProductDiv);
       }
-      // Render products
+     
+      
       botMessages.appendChild(botProductsDiv)
     }
 
     botMessages.scrollTo(0, botMessages.scrollHeight);
 
-    // Re-enable button and input field
+    
     botbutton.disabled = false;
     botinput.disabled = false;
     botinput.focus();
