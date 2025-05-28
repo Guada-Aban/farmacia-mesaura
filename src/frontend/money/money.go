@@ -1,7 +1,3 @@
-// En este codigo definimos la lógica de manejo de dinero en el frontend. (definimos una estructura Money para representar valores monetarios)
-
-
-
 package money
 
 import (
